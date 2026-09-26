@@ -8,6 +8,7 @@ body {
   --color-bgpri: #000000;
   --color-bgsec: #212121;
   --color-bgtri: #131313;
+  --color-pri: #173e76;
   --color-txpri: white;
   --color-txsec: #afafaf;
   --color-txter: #afafaf;
@@ -16,7 +17,6 @@ body {
 }
 button:disabled {
   opacity: 0.5;
-  color: rgba(68, 63, 63, 0.488);
   cursor: none;
 }
 *,

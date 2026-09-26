@@ -137,10 +137,10 @@ function ChatArea({ children }: { children: React.ReactNode }) {
     }
   }, [input]);
   return (
-    <section className="py-1 pr-1 flex flex-col w-full overflow-x-hidden">
+    <section className=" pr-1 flex flex-col w-full overflow-x-hidden">
       {/* !login header */}
       {loginStatus !== "authenticated" && (
-        <article className="flex w-full overflow-hidden justify-between">
+        <article className="flex w-full overflow-hidden justify-between p-0.5">
           <div className="flex py-2.5 px-1.5 gap-1 rounded-md hover:bg-bgsec active:bg-bgsec items-center cursor-pointer">
             <h3 className="font-bold">
               {process.env.NEXT_PUBLIC_PROJECT_NAME}
@@ -163,7 +163,7 @@ function ChatArea({ children }: { children: React.ReactNode }) {
           </div>
         </article>
       )}
-      <article className="flex flex-col items-center justify-center w-full h-full px-3 py-5 gap-4">
+      <article className="flex flex-col items-center justify-center w-full h-full pl-3 pb-5 gap-4">
         {children}
 
         {/* input area */}
@@ -191,10 +191,10 @@ function ChatArea({ children }: { children: React.ReactNode }) {
           </div>
           <button
             disabled={sendDisable}
-            className={`p-2 cursor-pointer ${sendDisable ? "bg-borderhl" : "bg-white"} rounded-full`}
+            className={`p-2 cursor-pointer ${sendDisable ? "bg-borderhl text-black" : "bg-pri text-white"} rounded-full`}
             onClick={handleSendMessage}
           >
-            <ArrowUp size={20} strokeWidth={2} className="text-black" />
+            <ArrowUp size={20} strokeWidth={3} />
           </button>
         </div>
       </article>

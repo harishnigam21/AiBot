@@ -13,7 +13,9 @@ export default function Chat() {
           <Loader size={10} />
         </div>
       ) : selectedChat ? (
-        <MessageArea />
+        <div className="w-full lg:w-3/4 self-center flex flex-col gap-3">
+          <MessageArea />
+        </div>
       ) : (
         <p className="font-thin text-red-500 text-sm tracking-wide">
           Failed to fetch messages !

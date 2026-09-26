@@ -1,7 +1,6 @@
 "use client";
 import {
   AtSign,
-  ChevronRight,
   FolderClosed,
   HelpingHand,
   Hexagon,
@@ -21,19 +20,13 @@ import { useAppDispatch, useAppSelector } from "../redux/store";
 import { loginSwitch } from "../redux/slices/Popup";
 import { startNewChat } from "../redux/slices/Chat";
 import { useRouter } from "next/navigation";
-import Loader from "./Loader";
-import Link from "next/link";
+import Recent from "./Recent";
 
 export default function SideBar() {
   const [barStatus, setBarStatus] = useState<boolean>(true);
   const { userInfo, loginStatus } = useAppSelector((store) => store.user);
   const { screenSize } = useAppSelector((store) => store.layout);
   const dispatch = useAppDispatch();
-  const { selectedChat, recentChatsList } = useAppSelector(
-    (store) => store.chat,
-  );
-  const { recentChatLoading } = useAppSelector((store) => store.loadings);
-
   const router = useRouter();
   useEffect(() => {
     if (screenSize.width < 580) {
@@ -142,39 +135,7 @@ export default function SideBar() {
               {/* pinned */}
 
               {/* Recent */}
-              <div className="flex flex-col p-3 overflow-y-auto">
-                {/* heading */}
-                <div className="flex flex-nowrap gap-1 items-center text-txsec cursor-pointer mb-2">
-                  <p className="font-medium text-sm">Recents</p>
-                  <ChevronRight size={12} className="mt-1" />
-                  {recentChatLoading && (
-                    <Loader size={4} density={2} color="txsec" />
-                  )}
-                </div>
-                {recentChatsList && recentChatsList.length > 0 ? (
-                  <div className="flex flex-col gap-1">
-                    {recentChatsList.map((item, i) => (
-                      <div
-                        onClick={() => {
-                          router.push(`/c=${item._id}`);
-                        }}
-                        key={`recent/chat/list/${i}`}
-                        className={`flex rounded-lg items-center ${selectedChat?._id == item._id && "bg-bgsec/90"} p-2 cursor-pointer hover:bg-bgsec/90 active:bg-bgsec/90`}
-                      >
-                        <p className="font-thin text-sm break-all line-clamp-1">
-                          {item.title}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p
-                    className={`font-thin text-red-500 text-xs tracking-wider ${recentChatLoading && "hidden"}`}
-                  >
-                    No recent Chat !
-                  </p>
-                )}
-              </div>
+              <Recent />
             </div>
           )}
         </div>
