@@ -1,0 +1,10 @@
+import express from "express";
+import jwtVerifier from "../middlewares/jwtVerifier";
+import { getChat, newChat, recentChatList } from "../controllers/Chat";
+import { saveMessage } from "../controllers/Messages";
+const router = express.Router();
+router.route("/new").post(jwtVerifier, newChat);
+router.route("/recent").get(jwtVerifier, recentChatList);
+router.route("/:id").get(jwtVerifier, getChat);
+router.route("/message").post(jwtVerifier, saveMessage);
+export default router;
