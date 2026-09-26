@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import chatRouter from "./routes/Chat";
 
 const app = express();
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5010;
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/chat", chatRouter);

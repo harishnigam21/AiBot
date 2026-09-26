@@ -25,6 +25,6 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 5002
+EXPOSE 5010
 
 CMD ["node", "dist/server.js"]
