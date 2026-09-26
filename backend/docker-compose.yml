@@ -104,7 +104,7 @@ services:
       - .env.gateway
 
     ports:
-      - "5008:5000"
+      - "5008:5008"
 
     depends_on:
       - auth
