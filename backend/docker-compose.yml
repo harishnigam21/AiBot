@@ -32,7 +32,7 @@ services:
       - .env.auth
 
     expose:
-      - "5001"
+      - "5009"
 
     depends_on:
       - redis
@@ -56,7 +56,7 @@ services:
       - .env.chat
 
     expose:
-      - "5002"
+      - "5010"
 
     depends_on:
       - redis
@@ -80,7 +80,7 @@ services:
       - .env.agent
 
     expose:
-      - "5003"
+      - "5011"
 
     depends_on:
       - redis
@@ -104,7 +104,7 @@ services:
       - .env.gateway
 
     ports:
-      - "5000:5000"
+      - "5008:5000"
 
     depends_on:
       - auth
