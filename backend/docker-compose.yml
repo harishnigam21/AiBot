@@ -1,0 +1,154 @@
+services:
+  # =========================
+  # Redis
+  # =========================
+  redis:
+    image: redis:7-alpine
+    container_name: aibot-redis
+    restart: unless-stopped
+
+    expose:
+      - "6379"
+
+    volumes:
+      - aibot_redis_data:/data
+
+    networks:
+      - aibot-network
+
+  # =========================
+  # Auth Service
+  # =========================
+  auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+
+    container_name: aibot-auth
+    restart: unless-stopped
+
+    env_file:
+      - .env
+      - .env.auth
+
+    expose:
+      - "5001"
+
+    depends_on:
+      - redis
+
+    networks:
+      - aibot-network
+
+  # =========================
+  # Chat Service
+  # =========================
+  chat:
+    build:
+      context: ./services/chat
+      dockerfile: Dockerfile
+
+    container_name: aibot-chat
+    restart: unless-stopped
+
+    env_file:
+      - .env
+      - .env.chat
+
+    expose:
+      - "5002"
+
+    depends_on:
+      - redis
+
+    networks:
+      - aibot-network
+
+  # =========================
+  # Agent Service
+  # =========================
+  agent:
+    build:
+      context: ./services/agent
+      dockerfile: Dockerfile
+
+    container_name: aibot-agent
+    restart: unless-stopped
+
+    env_file:
+      - .env
+      - .env.agent
+
+    expose:
+      - "5003"
+
+    depends_on:
+      - redis
+
+    networks:
+      - aibot-network
+
+  # =========================
+  # Gateway
+  # =========================
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+
+    container_name: aibot-gateway
+    restart: unless-stopped
+
+    env_file:
+      - .env
+      - .env.gateway
+
+    ports:
+      - "5000:5000"
+
+    depends_on:
+      - auth
+      - chat
+      - agent
+
+    networks:
+      - aibot-network
+
+  # =========================
+  # Frontend
+  # =========================
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_PROJECT_NAME: ${NEXT_PUBLIC_PROJECT_NAME}
+        NEXT_PUBLIC_PROJECT_Description: ${NEXT_PUBLIC_PROJECT_Description}
+        NEXT_PUBLIC_FIREBASE_API_KEY: ${NEXT_PUBLIC_FIREBASE_API_KEY}
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+
+    container_name: aibot-frontend
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - gateway
+
+    networks:
+      - aibot-network
+# =========================
+# Volumes
+# =========================
+
+volumes:
+  aibot_redis_data:
+
+# =========================
+# Network
+# =========================
+
+networks:
+  aibot-network:
+    driver: bridge
