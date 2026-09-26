@@ -1,0 +1,26 @@
+@import "tailwindcss";
+body {
+  padding: 0;
+  margin: 0;
+  background-color: var(--color-bgpri);
+}
+@theme {
+  --color-bgpri: #000000;
+  --color-bgsec: #212121;
+  --color-bgtri: #131313;
+  --color-txpri: white;
+  --color-txsec: #afafaf;
+  --color-txter: #afafaf;
+  --color-border: #212121;
+  --color-borderhl: #4d4d4d;
+}
+button:disabled {
+  opacity: 0.5;
+  color: rgba(68, 63, 63, 0.488);
+  cursor: none;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
