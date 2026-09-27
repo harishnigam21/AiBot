@@ -54,7 +54,14 @@ function ChatArea({ children }: { children: React.ReactNode }) {
                 const newChat = data.data;
                 chatId = newChat._id;
                 dispatch(setSelectChat(newChat));
-                dispatch(addRecentChat(newChat));
+                dispatch(
+                  addRecentChat({
+                    _id: newChat._id,
+                    title: newChat.title,
+                    pinned: newChat.pinned,
+                    createdAt: newChat.createdAt,
+                  }),
+                );
                 router.push(`/${newChat._id}`);
               } else {
                 throw new Error(data?.message || "No data return");
@@ -147,7 +154,7 @@ function ChatArea({ children }: { children: React.ReactNode }) {
             </h3>
             <ChevronDown size={14} />
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center whitespace-nowrap">
             <button
               className="bg-white text-black rounded-full py-2 px-3 font-medium cursor-pointer text-sm"
               onClick={() => dispatch(loginSwitch(true))}
@@ -156,46 +163,49 @@ function ChatArea({ children }: { children: React.ReactNode }) {
             </button>
             <button
               onClick={() => dispatch(loginSwitch(true))}
-              className="bg-bgsec text-txpri rounded-full py-2 px-3 font-medium border border-borderhl cursor-pointer text-sm"
+              className="bg-bgsec text-txpri rounded-full py-2 px-3 font-medium border border-borderhl cursor-pointer text-sm hidden sm:block"
             >
               Sign up for free
             </button>
           </div>
         </article>
       )}
-      <article className="flex flex-col items-center justify-center w-full h-full pl-3 pb-5 gap-4">
+      <article className="flex flex-col items-center justify-center w-full h-full pb-5 gap-4">
         {children}
 
         {/* input area */}
-        <div className="flex flex-nowrap bg-bgsec border border-borderhl/60 items-center w-full max-w-160 lg:max-w-180 rounded-full p-1 sm:p-2">
-          <div className="rounded-full p-2 hover:bg-borderhl/30 cursor-pointer">
-            <Plus strokeWidth={1.5} size={20} className="" />
+        <div className="px-4 w-full flex justify-center">
+          <div className="flex flex-nowrap bg-bgsec border border-borderhl/60 items-center min-w-50 max-w-160 w-full rounded-full p-1">
+            <div className="rounded-full p-2 hover:bg-borderhl/30 cursor-pointer">
+              <Plus strokeWidth={1.5} size={20} className="" />
+            </div>
+            <textarea
+              value={input}
+              name="search"
+              id="search"
+              className="outline-none focus:outline-none w-full grow scrollbar-none resize-none"
+              rows={1}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={`Ask ${process.env.NEXT_PUBLIC_PROJECT_NAME}`}
+              autoFocus
+              onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+            />
+            <div className="p-2 cursor-pointer mr-2">
+              <Mic strokeWidth={1.5} size={20} className="" />
+            </div>
+            <button
+              disabled={sendDisable}
+              className={`p-2 cursor-pointer ${sendDisable ? "bg-borderhl text-black" : "bg-pri text-white"} rounded-full`}
+              onClick={handleSendMessage}
+            >
+              <ArrowUp size={20} strokeWidth={3} />
+            </button>
           </div>
-          <textarea
-            value={input}
-            name="search"
-            id="search"
-            className="outline-none focus:outline-none w-full grow scrollbar-none resize-none"
-            rows={1}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={`Ask ${process.env.NEXT_PUBLIC_PROJECT_NAME}`}
-            onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSendMessage();
-              }
-            }}
-          />
-          <div className="p-2 cursor-pointer mr-2">
-            <Mic strokeWidth={1.5} size={20} className="" />
-          </div>
-          <button
-            disabled={sendDisable}
-            className={`p-2 cursor-pointer ${sendDisable ? "bg-borderhl text-black" : "bg-pri text-white"} rounded-full`}
-            onClick={handleSendMessage}
-          >
-            <ArrowUp size={20} strokeWidth={3} />
-          </button>
         </div>
       </article>
     </section>

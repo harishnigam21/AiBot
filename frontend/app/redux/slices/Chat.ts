@@ -11,19 +11,23 @@ export interface Chat {
   title: string;
   pinned: boolean;
   messages: Message[];
+  createdAt: Date;
 }
 export interface RecentChat {
   _id: string;
   title: string;
   pinned: boolean;
+  createdAt: Date;
 }
 interface ChatState {
   selectedChat: Chat | null;
   recentChatsList: RecentChat[];
+  pinChatsList: RecentChat[];
 }
 const initialState: ChatState = {
   selectedChat: null,
   recentChatsList: [],
+  pinChatsList: [],
 };
 
 const chatSlice = createSlice({
@@ -41,6 +45,47 @@ const chatSlice = createSlice({
     },
     addRecentChat: (state, action: PayloadAction<RecentChat>) => {
       state.recentChatsList.unshift(action.payload);
+    },
+    setPinChat: (state, action: PayloadAction<RecentChat[]>) => {
+      state.pinChatsList = action.payload;
+    },
+    addPinChat: (state, action: PayloadAction<RecentChat>) => {
+      state.recentChatsList = state.recentChatsList.filter(
+        (item) => item._id !== action.payload._id,
+      );
+      state.pinChatsList.push(action.payload);
+    },
+    setUnpinChat: (state, action: PayloadAction<RecentChat>) => {
+      const item = action.payload;
+      state.pinChatsList = state.pinChatsList.filter(
+        (inthere) => inthere._id !== item._id,
+      );
+
+      function findInsertIndex(
+        chats: RecentChat[],
+        newChat: RecentChat,
+      ): number {
+        const target = new Date(newChat.createdAt).getTime();
+        let left = 0;
+        let right = chats.length;
+        while (left < right) {
+          const mid = Math.floor((left + right) / 2);
+          const midTime = new Date(chats[mid].createdAt).getTime();
+          if (midTime >= target) {
+            left = mid + 1;
+          } else {
+            right = mid;
+          }
+        }
+        return left;
+      }
+
+      const index = findInsertIndex(state.recentChatsList, item);
+      state.recentChatsList = [
+        ...state.recentChatsList.slice(0, index),
+        item,
+        ...state.recentChatsList.slice(index),
+      ];
     },
     addMessage: (state, action: PayloadAction<Message[]>) => {
       const response = action.payload;
@@ -66,5 +111,8 @@ export const {
   addRecentChat,
   addMessage,
   removeDummies,
+  setPinChat,
+  addPinChat,
+  setUnpinChat,
 } = chatSlice.actions;
 export default chatSlice.reducer;

@@ -7,6 +7,7 @@ import { setLoginStatus, setUser } from "../redux/slices/User";
 import { FcGoogle } from "react-icons/fc";
 import { SiRefinedgithub } from "react-icons/si";
 import { useState } from "react";
+import Loader from "./Loader";
 
 export default function LoginPopup() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -22,7 +23,7 @@ export default function LoginPopup() {
           </p>
           {/* Google */}
           <div
-            className="rounded-full cursor-pointer bg-bgpri/30 hover:bg-transparent active:bg-transparent border border-borderhl p-3 w-full flex items-center justify-center gap-2 transition-all"
+            className="relative rounded-full cursor-pointer bg-bgpri/30 hover:bg-transparent active:bg-transparent border border-borderhl p-3 w-full flex items-center justify-center gap-2 transition-all overflow-hidden"
             onClick={async () => {
               if (loading) return;
               try {
@@ -45,6 +46,11 @@ export default function LoginPopup() {
           >
             <FcGoogle className="size-6" />
             <p className="font-medium">Continue with Google</p>
+            {loading && (
+              <div className="absolute w-full h-full z-10 bg-bgsec/10 flex items-center justify-center backdrop-blur-xs">
+                <Loader />
+              </div>
+            )}
           </div>
           {/* Github */}
           <div className="rounded-full cursor-pointer bg-bgpri/30 hover:bg-transparent active:bg-transparent border border-borderhl p-3 w-full flex items-center justify-center gap-2 transition-all">

@@ -9,7 +9,7 @@ export default function Loader({
   color?: string;
   density?: number;
 }) {
-  const rotations = [0, 30, 60, 90, 120, 150];
+  const rotations = [0, 45, 90, 135];
 
   return (
     <div

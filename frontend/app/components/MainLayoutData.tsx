@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { Data } from "@/types/data";
 import { setLoginStatus, setUser, User } from "../redux/slices/User";
-import { RecentChat, setRecentChat } from "../redux/slices/Chat";
+import { RecentChat, setPinChat, setRecentChat } from "../redux/slices/Chat";
 import { setRecentChatLoading } from "../redux/slices/LoadingStates";
 export default function MainLayoutData() {
   const { sendRequest } = useApi();
@@ -28,10 +28,13 @@ export default function MainLayoutData() {
       dispatch(setRecentChatLoading(true));
       await sendRequest("api/chat/recent")
         .then((result) => {
-          const data = result.data as Data<RecentChat[]> | undefined;
+          const data = result.data as
+            | Data<{ recent: RecentChat[]; pinned: RecentChat[] }>
+            | undefined;
           if (result && result.success) {
             if (data && data.data) {
-              dispatch(setRecentChat(data.data));
+              dispatch(setRecentChat(data.data.recent));
+              dispatch(setPinChat(data.data.pinned));
             }
           }
         })

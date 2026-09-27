@@ -14,6 +14,8 @@ import {
   Store,
   Telescope,
 } from "lucide-react";
+import { VscLayoutSidebarLeftOff } from "react-icons/vsc";
+
 import LogoDark from "../assets/svg/LogoDark";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -21,11 +23,13 @@ import { loginSwitch } from "../redux/slices/Popup";
 import { startNewChat } from "../redux/slices/Chat";
 import { useRouter } from "next/navigation";
 import Recent from "./Recent";
+import Pinned from "./Pinned";
 
 export default function SideBar() {
   const [barStatus, setBarStatus] = useState<boolean>(true);
   const { userInfo, loginStatus } = useAppSelector((store) => store.user);
   const { screenSize } = useAppSelector((store) => store.layout);
+  const [logoHover, setLogoHover] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const router = useRouter();
   useEffect(() => {
@@ -37,32 +41,38 @@ export default function SideBar() {
   }, [screenSize]);
   return (
     <section
-      className={`flex flex-col ${barStatus ? "w-40 md:w-50 lg:w-65" : "min-w-fit"} max-h-full ${screenSize.width < 580 && barStatus && "fixed left-0 top-0 h-full bg-bgpri"} overflow-hidden scrollbar-thin scrollbar-thumb-borderhl border-r border-border transition-all`}
+      className={`flex flex-col ${barStatus ? "w-65" : "min-w-fit"} max-h-full ${screenSize.width < 580 && barStatus && "fixed left-0 top-0 h-full bg-bgpri"} overflow-hidden scrollbar-thin scrollbar-thumb-borderhl border-r border-border transition-all py-1 px-1`}
     >
       {/*1st part - logo and side toggle */}
       <div className="flex flex-nowrap items-center justify-between p-2 mb-2">
-        {barStatus && (
-          <div className="size-6">
-            <LogoDark />
-          </div>
-        )}
         <div
-          className="cursor-pointer"
-          onClick={() => setBarStatus((prev) => !prev)}
+          onMouseOver={() => setLogoHover(true)}
+          onMouseOut={() => setLogoHover(false)}
+          className={`grow flex ${!barStatus && "justify-center"}`}
         >
-          {barStatus ? (
-            <PanelLeftClose size={18} className="text-txpri" />
+          {logoHover && !barStatus ? (
+            <div
+              className="size-6 cursor-w-resize flex items-center justify-center hover:bg-bgsec active:bg-bgsec transition-all rounded-md"
+              onClick={() => setBarStatus(true)}
+            >
+              <VscLayoutSidebarLeftOff size={18} className="scale-x-115" />
+            </div>
           ) : (
-            <PanelLeftOpen size={18} className="text-txpri" />
+            <div className="size-6 cursor-pointer self-start">
+              <LogoDark />
+            </div>
           )}
         </div>
+        {barStatus && (
+          <div className="cursor-w-resize" onClick={() => setBarStatus(false)}>
+            <VscLayoutSidebarLeftOff size={18} className="scale-x-115" />
+          </div>
+        )}
       </div>
       {/* 2nd part - new chat and other features */}
       <div className="flex h-full flex-col justify-between">
-        <div className="flex h-30 grow flex-col">
-          <div
-            className={`p-1 ${barStatus && "pl-1"} flex flex-col gap-0.5 scrollbar-thin overflow-y-auto`}
-          >
+        <div className="flex h-30 grow flex-col overflow-y-auto scrollbar-thin">
+          <div className={`p-1 ${barStatus && "pl-1"} flex flex-col gap-0.5`}>
             {[
               {
                 label: "New Chat",
@@ -133,13 +143,12 @@ export default function SideBar() {
           {loginStatus == "authenticated" && barStatus && (
             <div className="flex flex-col">
               {/* pinned */}
-
+              <Pinned />
               {/* Recent */}
               <Recent />
             </div>
           )}
         </div>
-
         {/*3rd part - pricing, setting and help navigation */}
         <div className="flex flex-col">
           {loginStatus !== "authenticated" && (
@@ -168,10 +177,10 @@ export default function SideBar() {
                 There name and pic if user logged in
         */}
           {/* if not loginned */}
-          {barStatus && (
+          {barStatus ? (
             <div>
               {loginStatus == "authenticated" && userInfo ? (
-                <div className="p-4 flex justify-between items-center gap-2">
+                <div className="p-2 flex justify-between items-center gap-2">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 aspect-square text-[10px] font-thin rounded-full flex items-center justify-center bg-orange-500 overflow-hidden">
                       {userInfo.pic ? (
@@ -196,7 +205,7 @@ export default function SideBar() {
                     </div>
                   </div>
                   <div className="cursor-pointer">
-                    <Store size={16} className="text-txpri/80" />
+                    <Store size={18} className="text-txpri/80" />
                   </div>
                 </div>
               ) : (
@@ -214,6 +223,25 @@ export default function SideBar() {
                   >
                     Log in
                   </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              {loginStatus == "authenticated" && userInfo && (
+                <div className="w-6 h-6 aspect-square text-[10px] font-thin rounded-full flex items-center justify-center bg-orange-500 overflow-hidden">
+                  {userInfo.pic ? (
+                    <img
+                      src={userInfo.pic}
+                      alt="user pic"
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <b>
+                      {userInfo?.firstName[0]}
+                      {userInfo?.lastName[0]}
+                    </b>
+                  )}
                 </div>
               )}
             </div>
