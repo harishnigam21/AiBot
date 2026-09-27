@@ -16,6 +16,7 @@ export const newChat = async (req: AuthRequest, res: Response) => {
         _id: chat._id,
         title: chat.title,
         pinned: chat.pinned,
+        createdAt: chat.createdAt,
         messages: [],
       },
     });
@@ -27,12 +28,74 @@ export const newChat = async (req: AuthRequest, res: Response) => {
 export const recentChatList = async (req: AuthRequest, res: Response) => {
   try {
     const chat = await Chat.find({ userId: req.user?._id })
-      .select("title pinned")
+      .select("title pinned createdAt")
       .sort({ createdAt: -1 })
       .lean();
-    return res.status(200).json({ data: chat });
+    const pinned = chat.filter((item) => item.pinned);
+    const recent = chat.filter((item) => !item.pinned);
+    return res
+      .status(200)
+      .json({ data: { pinned: pinned || [], recent: recent || [] } });
   } catch (error) {
     getServerError(res, error, "recentChatList");
+  }
+};
+
+export const pinChat = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const chat = await Chat.findOneAndUpdate(
+      { userId: req.user?._id, _id: id },
+      {
+        $set: {
+          pinned: true,
+        },
+      },
+      {
+        new: true,
+        projection: {
+          _id: 1,
+          pinned: 1,
+          title: 1,
+          createdAt: 1,
+        },
+      },
+    );
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+    return res.status(200).json({ data: chat });
+  } catch (error) {
+    getServerError(res, error, "pinChat");
+  }
+};
+
+export const unpinChat = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const chat = await Chat.findOneAndUpdate(
+      { userId: req.user?._id, _id: id },
+      {
+        $set: {
+          pinned: false,
+        },
+      },
+      {
+        new: true,
+        projection: {
+          _id: 1,
+          pinned: 1,
+          title: 1,
+          createdAt: 1,
+        },
+      },
+    );
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+    return res.status(200).json({ data: chat });
+  } catch (error) {
+    getServerError(res, error, "pinChat");
   }
 };
 
