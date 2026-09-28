@@ -68,20 +68,7 @@ export default function Pinned() {
         {pinChatsList && pinChatsList.length > 0 ? (
           ShowPin ? (
             <div className="flex flex-col gap-1">
-              {[
-                ...pinChatsList,
-                ...pinChatsList,
-                ...pinChatsList,
-                ...pinChatsList,
-                ...pinChatsList,
-                ...pinChatsList,
-                ...pinChatsList,
-                ...pinChatsList,
-                ...pinChatsList,
-                ...pinChatsList,
-                ...pinChatsList,
-                ...pinChatsList,
-              ].map((item, i) => (
+              {pinChatsList.map((item, i) => (
                 <TitleList
                   Pname="Unpin"
                   item={item}

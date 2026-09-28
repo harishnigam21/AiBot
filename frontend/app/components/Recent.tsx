@@ -80,7 +80,7 @@ export default function Recent() {
       {recentChatsList && recentChatsList.length > 0 ? (
         showRecent ? (
           <div className="flex flex-col">
-            {[...recentChatsList,...recentChatsList,...recentChatsList,...recentChatsList,...recentChatsList,...recentChatsList,...recentChatsList,...recentChatsList,...recentChatsList,...recentChatsList,...recentChatsList,...recentChatsList,...recentChatsList].map((item, i) => (
+            {recentChatsList.map((item, i) => (
               <TitleList
                 item={item}
                 selectedChat={selectedChat}
