@@ -125,3 +125,21 @@ export const getChat = async (req: AuthRequest, res: Response) => {
     getServerError(res, error, "getChat");
   }
 };
+
+export const getTitle = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  try {
+    const chatExist = await Chat.findOne({
+      _id: id as string,
+      userId: req.user?._id,
+    });
+    if (!chatExist) {
+      return res.status(400).json({ message: "No such chat exist" });
+    }
+    return res.status(200).json({
+      title: chatExist.title,
+    });
+  } catch (error) {
+    getServerError(res, error, "getChat");
+  }
+};

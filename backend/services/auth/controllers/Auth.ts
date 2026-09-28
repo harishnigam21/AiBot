@@ -52,6 +52,12 @@ export const LogIn = async (req: Request, res: Response) => {
         }
         newUser.refreshToken = refresh_token;
         await newUser.save();
+        res.cookie("actk", access_token, {
+          httpOnly: true,
+          maxAge: 24 * 60 * 60 * 1000,
+          secure: in_production,
+          sameSite: in_production ? "none" : "lax",
+        });
         res.cookie("jwt", refresh_token, {
           httpOnly: true,
           maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -114,6 +120,12 @@ export const LogIn = async (req: Request, res: Response) => {
         "EX",
         7 * 24 * 60 * 60,
       );
+      res.cookie("actk", access_token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        secure: in_production,
+        sameSite: in_production ? "none" : "lax",
+      });
       res.cookie("jwt", refresh_token, {
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -183,6 +195,12 @@ export const LogIn = async (req: Request, res: Response) => {
       "EX",
       7 * 24 * 60 * 60,
     );
+    res.cookie("actk", access_token, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: in_production,
+      sameSite: in_production ? "none" : "lax",
+    });
     res.cookie("jwt", refresh_token, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
