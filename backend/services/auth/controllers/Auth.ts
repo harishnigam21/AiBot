@@ -8,6 +8,7 @@ import { getServerError } from "../utils/serverError";
 import { AuthRequest } from "../types/AuthRequest";
 import cloudinary from "../utils/cloudinary";
 import redisConnect from "../config/connect";
+import { env } from "node:process";
 const in_production = process.env.IN_PRODUCTION === "true";
 
 export const LogIn = async (req: Request, res: Response) => {
@@ -57,12 +58,14 @@ export const LogIn = async (req: Request, res: Response) => {
           maxAge: 24 * 60 * 60 * 1000,
           secure: in_production,
           sameSite: in_production ? "none" : "lax",
+          domain: process.env.TOP_DOMAIN,
         });
         res.cookie("jwt", refresh_token, {
           httpOnly: true,
           maxAge: 7 * 24 * 60 * 60 * 1000,
           secure: in_production,
           sameSite: in_production ? "none" : "lax",
+          domain: process.env.TOP_DOMAIN,
         });
         const eUser = {
           _id: newUser._id,
@@ -125,12 +128,14 @@ export const LogIn = async (req: Request, res: Response) => {
         maxAge: 24 * 60 * 60 * 1000,
         secure: in_production,
         sameSite: in_production ? "none" : "lax",
+        domain: process.env.TOP_DOMAIN,
       });
       res.cookie("jwt", refresh_token, {
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
         secure: in_production,
         sameSite: in_production ? "none" : "lax",
+        domain: process.env.TOP_DOMAIN,
       });
       return res.status(200).json({
         data: eUser,
@@ -200,12 +205,14 @@ export const LogIn = async (req: Request, res: Response) => {
       maxAge: 24 * 60 * 60 * 1000,
       secure: in_production,
       sameSite: in_production ? "none" : "lax",
+      domain: process.env.TOP_DOMAIN,
     });
     res.cookie("jwt", refresh_token, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
       secure: in_production,
       sameSite: in_production ? "none" : "lax",
+      domain: process.env.TOP_DOMAIN,
     }); //TODO: add secure:true at production level
     console.log("Successfully Verified User : ", ExistingUser.email);
     return res.status(200).json({
