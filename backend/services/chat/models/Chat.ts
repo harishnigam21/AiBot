@@ -3,6 +3,8 @@ export interface IChat extends Document {
   title: string;
   userId: mongoose.Types.ObjectId;
   pinned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 const ChatSchema = new mongoose.Schema<IChat>(
   {
