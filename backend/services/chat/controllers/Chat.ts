@@ -3,6 +3,7 @@ import { Response } from "express";
 import { getServerError } from "../utils/serverError";
 import Chat from "../models/Chat";
 import Message from "../models/Message";
+import mongoose from "mongoose";
 
 export const newChat = async (req: AuthRequest, res: Response) => {
   const { message } = req.body;
@@ -141,5 +142,30 @@ export const getTitle = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     getServerError(res, error, "getChat");
+  }
+};
+// TODO: Currently I don't think to delete this chat from redis also because redis will vanish automatically in a day
+export const deleteChat = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    const chatExist = await Chat.findOne({
+      userId: req.user?._id,
+      _id: id,
+    }).session(session);
+    if (!chatExist) {
+      await session.abortTransaction();
+      return res.status(404).json({ message: "Chat doesn't exist" });
+    }
+    await Chat.deleteOne({ _id: chatExist._id }).session(session);
+    await Message.deleteMany({ chatId: chatExist._id }).session(session);
+    await session.commitTransaction();
+    return res.status(200).json({ id: chatExist._id });
+  } catch (error) {
+    await session.abortTransaction();
+    getServerError(res, error, "deleteChat");
+  } finally {
+    await session.endSession();
   }
 };
