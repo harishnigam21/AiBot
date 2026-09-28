@@ -3,8 +3,6 @@ import { Data } from "@/types/data";
 import type { Chat } from "@/app/redux/slices/Chat";
 import { serverFetch } from "@/utils/serverApi";
 import ChatLayoutShell from "@/app/components/ChatLayoutShell";
-import { Suspense } from "react";
-import ChatSkeleton from "@/app/components/ChatSkeleton";
 export async function generateMetadata({
   params,
 }: {
@@ -42,9 +40,7 @@ export default async function RootLayout({
   const dataChat = responseChat.data as Data<Chat> | null;
   return (
     <>
-      <Suspense fallback={<ChatSkeleton />}>
-        <ChatLayoutShell dataChat={dataChat?.data || null} />
-      </Suspense>
+      <ChatLayoutShell dataChat={dataChat?.data || null} />
       {children}
     </>
   );
