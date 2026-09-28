@@ -1,6 +1,6 @@
 "use client";
 import { ArrowUp, ChevronDown, Mic, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import useApi from "@/hooks/useApi";
 import toast from "react-hot-toast";
@@ -23,6 +23,7 @@ import {
 function ChatArea({ children }: { children: React.ReactNode }) {
   const [input, setInput] = useState<string>("");
   const [sendDisable, setSendDisable] = useState<boolean>(true);
+  const [switchTextArea, setSwitchTextArea] = useState<boolean>(false);
   const loginStatus = useAppSelector((store) => store.user.loginStatus);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -39,6 +40,7 @@ function ChatArea({ children }: { children: React.ReactNode }) {
     dispatch(setMessageLoading(true));
     const inputBackup = input;
     setInput("");
+    setSwitchTextArea(false);
     try {
       if (!input || input.length <= 1) {
         toast.error("Invalid input value !");
@@ -174,37 +176,43 @@ function ChatArea({ children }: { children: React.ReactNode }) {
         {children}
 
         {/* input area */}
-        <div className="px-4 w-full flex justify-center">
-          <div className="flex flex-nowrap bg-bgsec border border-borderhl/60 items-center min-w-50 max-w-160 w-full rounded-full p-1">
-            <div className="rounded-full p-2 hover:bg-borderhl/30 cursor-pointer">
-              <Plus strokeWidth={1.5} size={20} className="" />
+        <div className="px-4 w-full flex flex-col justify-center items-center">
+          <div className="flex flex-col flex-nowrap bg-bgsec border border-borderhl/60 items-center min-w-50 max-w-160 w-full rounded-3xl p-1.5">
+            {switchTextArea && (
+              <div className="p-1 h-fit overflow-hidden w-full">
+                <TextArea
+                  input={input}
+                  setInput={setInput}
+                  setSwitchTextArea={setSwitchTextArea}
+                  handleSendMessage={handleSendMessage}
+                />
+              </div>
+            )}
+            <div className="flex flex-nowrap justify-between items-center w-full">
+              <div className="rounded-full p-2 hover:bg-borderhl/30 cursor-pointer flex self-end">
+                <Plus strokeWidth={1.5} size={20} className="" />
+              </div>
+              {!switchTextArea && (
+                <TextArea
+                  input={input}
+                  setInput={setInput}
+                  setSwitchTextArea={setSwitchTextArea}
+                  handleSendMessage={handleSendMessage}
+                />
+              )}
+              <div className="flex flex-nowrap self-end">
+                <div className="p-2 cursor-pointer mr-2">
+                  <Mic strokeWidth={1.5} size={20} className="" />
+                </div>
+                <button
+                  disabled={sendDisable}
+                  className={`p-2 cursor-pointer ${sendDisable ? "bg-borderhl text-black" : "bg-pri text-white"} rounded-full`}
+                  onClick={handleSendMessage}
+                >
+                  <ArrowUp size={20} strokeWidth={3} />
+                </button>
+              </div>
             </div>
-            <textarea
-              value={input}
-              name="search"
-              id="search"
-              className="outline-none focus:outline-none w-full grow scrollbar-none resize-none"
-              rows={1}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={`Ask ${process.env.NEXT_PUBLIC_PROJECT_NAME}`}
-              autoFocus
-              onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-            />
-            <div className="p-2 cursor-pointer mr-2">
-              <Mic strokeWidth={1.5} size={20} className="" />
-            </div>
-            <button
-              disabled={sendDisable}
-              className={`p-2 cursor-pointer ${sendDisable ? "bg-borderhl text-black" : "bg-pri text-white"} rounded-full`}
-              onClick={handleSendMessage}
-            >
-              <ArrowUp size={20} strokeWidth={3} />
-            </button>
           </div>
         </div>
       </article>
@@ -213,3 +221,53 @@ function ChatArea({ children }: { children: React.ReactNode }) {
 }
 
 export default ChatArea;
+
+const TextArea = ({
+  input,
+  setInput,
+  setSwitchTextArea,
+  handleSendMessage,
+}: {
+  input: string;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
+  setSwitchTextArea: React.Dispatch<React.SetStateAction<boolean>>;
+  handleSendMessage: () => void;
+}) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (input && textareaRef.current) {
+      textareaRef.current.focus();
+      const length = textareaRef.current.value.length;
+      textareaRef.current.setSelectionRange(length, length);
+    }
+  }, []);
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [input]);
+  return (
+    <textarea
+      ref={textareaRef}
+      value={input}
+      name="search"
+      id="search"
+      className="outline-none focus:outline-none w-full grow scrollbar-thin scrollbar-thumb-borderhl resize-none max-h-60"
+      rows={1}
+      onChange={(e) => {
+        const textarea = e.target;
+        setInput(textarea.value);
+        textarea.style.height = "auto";
+        const isMoreThanOneRow = textarea.scrollHeight > textarea.clientHeight;
+        setSwitchTextArea(isMoreThanOneRow);
+      }}
+      placeholder={`Ask anything`}
+      onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          handleSendMessage();
+        }
+      }}
+    />
+  );
+};

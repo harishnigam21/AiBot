@@ -22,7 +22,7 @@ export default function Message({
   }, [msg]);
   return (
     <div
-      className={`p-2 max-w-full ${msg.role == "ai" ? "self-start rounded-tl-none rounded-xl" : "self-end rounded-full px-4 bg-pri text-txpri"}`}
+      className={`p-2 max-w-full ${msg.role == "ai" ? "self-start rounded-tl-none rounded-xl" : "self-end rounded-3xl mt-10 px-4 bg-pri text-txpri"}`}
     >
       {images && (
         <div className="flex flex-wrap gap-3 my-5">
@@ -64,7 +64,7 @@ export default function Message({
             </h4>
           ),
           p: ({ children }) => (
-            <p className="text-sm sm:text-base leading-relaxed text-txpri last:mb-0">
+            <p className="text-sm sm:text-base leading-relaxed text-txpri last:mb-0 whitespace-pre-line">
               {children}
             </p>
           ),

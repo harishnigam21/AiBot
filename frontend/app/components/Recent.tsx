@@ -73,7 +73,9 @@ export default function Recent() {
               dispatch(startNewChat());
               router.push("/");
             }}
-          />
+          >
+            <title>New Chat</title>
+          </PenSquare>
           <Ellipsis size={14} />
         </div>
       </div>
