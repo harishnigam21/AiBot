@@ -1,5 +1,4 @@
 import { ChevronRight, Ellipsis, PenSquare, Pin } from "lucide-react";
-import Loader from "./Loader";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -65,7 +64,6 @@ export default function Recent() {
             <ChevronRight size={12} className="mt-1" />
           )}
         </div>
-        {recentChatLoading && <Loader size={4} density={2} color="txsec" />}
         <div className="hidden text-txsec flex-nowrap gap-4 items-center self-center mt-1 group-hover:flex group-active:flex">
           <PenSquare
             size={14}

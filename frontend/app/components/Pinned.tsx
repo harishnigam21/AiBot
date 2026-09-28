@@ -1,5 +1,4 @@
 import { ChevronRight, PinOff } from "lucide-react";
-import Loader from "./Loader";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useEffect, useState } from "react";
 import { RecentChat, setUnpinChat } from "../redux/slices/Chat";
@@ -63,7 +62,6 @@ export default function Pinned() {
               <ChevronRight size={12} className="mt-1" />
             )}
           </div>
-          {recentChatLoading && <Loader size={4} density={2} color="txsec" />}
         </div>
         {pinChatsList && pinChatsList.length > 0 ? (
           ShowPin ? (

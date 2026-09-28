@@ -24,10 +24,12 @@ import { startNewChat } from "../redux/slices/Chat";
 import { useRouter } from "next/navigation";
 import Recent from "./Recent";
 import Pinned from "./Pinned";
+import HorizontalBar from "./HorizontalBar";
 
 export default function SideBar() {
   const [barStatus, setBarStatus] = useState<boolean>(true);
   const { userInfo, loginStatus } = useAppSelector((store) => store.user);
+  const { recentChatLoading } = useAppSelector((store) => store.loadings);
   const { screenSize } = useAppSelector((store) => store.layout);
   const [logoHover, setLogoHover] = useState<boolean>(false);
   const dispatch = useAppDispatch();
@@ -41,7 +43,7 @@ export default function SideBar() {
   }, [screenSize]);
   return (
     <section
-      className={`flex flex-col ${barStatus ? "w-65" : "min-w-fit"} max-h-full ${screenSize.width < 580 && barStatus && "fixed left-0 top-0 h-full bg-bgpri"} overflow-hidden scrollbar-thin scrollbar-thumb-borderhl border-r border-border transition-all py-1 px-1`}
+      className={`flex flex-col ${barStatus ? "w-65" : "min-w-fit"} max-h-full ${screenSize.width < 580 && barStatus && "fixed left-0 top-0 h-full "} overflow-hidden bg-bgpri scrollbar-thin scrollbar-thumb-borderhl border-r border-border transition-all py-1 px-1`}
     >
       {/*1st part - logo and side toggle */}
       <div className="flex flex-nowrap items-center justify-between p-2 mb-2">
@@ -69,20 +71,22 @@ export default function SideBar() {
           </div>
         )}
       </div>
+      <div
+        onClick={() => {
+          dispatch(startNewChat());
+          router.push("/");
+        }}
+        id={`sidebar/new_chat`}
+        className={`flex rounded-lg items-center ${!barStatus && "justify-center"} p-2 pl-3 gap-2 cursor-pointer hover:bg-bgsec/90 active:bg-bgsec/90`}
+      >
+        <PenSquare size={18} strokeWidth={1.5} />
+        {barStatus && <p className="font-thin text-sm">New Chat</p>}
+      </div>
       {/* 2nd part - new chat and other features */}
       <div className="flex h-full flex-col justify-between">
         <div className="flex h-30 grow flex-col overflow-y-auto scrollbar-thin">
           <div className={`p-1 ${barStatus && "pl-1"} flex flex-col gap-0.5`}>
             {[
-              {
-                label: "New Chat",
-                icon: PenSquare,
-                login: "both",
-                onClick: () => {
-                  dispatch(startNewChat());
-                  router.push("/");
-                },
-              },
               {
                 label: "Library",
                 icon: LibraryBig,
@@ -127,7 +131,7 @@ export default function SideBar() {
               ) {
                 return (
                   <div
-                    onClick={item.onClick}
+                    onClick={item.onclick}
                     key={`sidebar/vert/1/${i}`}
                     className={`flex rounded-lg items-center ${!barStatus && "justify-center"} p-2 gap-2 cursor-pointer hover:bg-bgsec/90 active:bg-bgsec/90`}
                   >
@@ -141,7 +145,8 @@ export default function SideBar() {
             })}
           </div>
           {loginStatus == "authenticated" && barStatus && (
-            <div className="flex flex-col">
+            <div className="relative flex flex-col overflow-hidden">
+              {recentChatLoading && <HorizontalBar />}
               {/* pinned */}
               <Pinned />
               {/* Recent */}

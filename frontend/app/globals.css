@@ -24,3 +24,12 @@ button:disabled {
 *::after {
   box-sizing: border-box;
 }
+
+@keyframes HorizontalBarAnimation {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}

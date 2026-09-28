@@ -6,9 +6,12 @@ import {
   Share,
   Trash,
 } from "lucide-react";
-import { Chat, RecentChat } from "../redux/slices/Chat";
+import { Chat, deleteChat, RecentChat } from "../redux/slices/Chat";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import useApi from "@/hooks/useApi";
+import { useAppDispatch } from "../redux/store";
+import { setRecentChatLoading } from "../redux/slices/LoadingStates";
 
 export default function TitleList({
   item,
@@ -23,12 +26,12 @@ export default function TitleList({
   Picon: LucideIcon;
   PClick: (id: string) => void;
 }) {
+  const { sendRequest } = useApi();
   const router = useRouter();
-
+  const dispatch = useAppDispatch();
   const optionRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLDivElement>(null);
   const [options, setOptions] = useState<boolean>(false);
-
   const [measurement, setMeasurement] = useState<{
     top: number;
     width: number;
@@ -36,7 +39,6 @@ export default function TitleList({
     left: number;
     bottom: number;
   } | null>(null);
-
   const [optionDirection, setOptionDirection] = useState<{
     dir: "top" | "bottom";
     value: number;
@@ -62,6 +64,20 @@ export default function TitleList({
     });
   };
 
+  const handleDelete = () => {
+    dispatch(setRecentChatLoading(true));
+    sendRequest(`api/chat/${item._id}`, "DELETE")
+      .then((result) => {
+        if (result && result.success) {
+          const data = result.data as { id: string } | null;
+          if (data && data.id) dispatch(deleteChat(data.id));
+          router.push("/");
+        }
+      })
+      .finally(() => {
+        dispatch(setRecentChatLoading(false));
+      });
+  };
   useEffect(() => {
     if (!options) return;
     updateMeasurement();
@@ -166,7 +182,10 @@ export default function TitleList({
               <Archive size={18} />
               <p className="text-sm">Archive</p>
             </div>
-            <div className="py-2 px-4 hover:bg-borderhl/80 transition-all w-full rounded-xl flex flex-nowrap gap-2 items-center">
+            <div
+              className="py-2 px-4 hover:bg-borderhl/80 transition-all w-full rounded-xl flex flex-nowrap gap-2 items-center"
+              onClick={handleDelete}
+            >
               <Trash size={18} />
               <p className="text-sm">Delete</p>
             </div>

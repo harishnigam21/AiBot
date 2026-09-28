@@ -102,6 +102,16 @@ const chatSlice = createSlice({
         );
       }
     },
+    deleteChat: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      if (state.selectedChat?._id == id) {
+        state.selectedChat = null;
+      }
+      state.recentChatsList = state.recentChatsList.filter(
+        (item) => item._id !== id,
+      );
+      state.pinChatsList = state.pinChatsList.filter((item) => item._id !== id);
+    },
   },
 });
 export const {
@@ -114,5 +124,6 @@ export const {
   setPinChat,
   addPinChat,
   setUnpinChat,
+  deleteChat,
 } = chatSlice.actions;
 export default chatSlice.reducer;
