@@ -14,11 +14,8 @@ import {
   setSelectChat,
 } from "../redux/slices/Chat";
 import { loginSwitch } from "../redux/slices/Popup";
-import { useParams, useRouter } from "next/navigation";
-import {
-  setChatLoading,
-  setMessageLoading,
-} from "../redux/slices/LoadingStates";
+import { useRouter } from "next/navigation";
+import { setMessageLoading } from "../redux/slices/LoadingStates";
 
 function ChatArea({ children }: { children: React.ReactNode }) {
   const [input, setInput] = useState<string>("");
@@ -30,12 +27,6 @@ function ChatArea({ children }: { children: React.ReactNode }) {
   const { selectedChat } = useAppSelector((store) => store.chat);
   const { sendRequest } = useApi();
 
-  const params = useParams();
-  const rawChatId = typeof params?.chatId === "string" ? params.chatId : "";
-  const decodedChatId = rawChatId ? decodeURIComponent(rawChatId) : "";
-  const chatId = decodedChatId.startsWith("c=")
-    ? decodedChatId.replace("c=", "")
-    : decodedChatId;
   const handleSendMessage = async () => {
     dispatch(setMessageLoading(true));
     const inputBackup = input;
@@ -114,30 +105,7 @@ function ChatArea({ children }: { children: React.ReactNode }) {
       dispatch(setMessageLoading(false));
     }
   };
-  useEffect(() => {
-    if (!chatId) return;
-    const getChat = async () => {
-      dispatch(setChatLoading(true));
-      await sendRequest(`api/chat/${chatId}`)
-        .then((result) => {
-          const data = result.data as Data<Chat> | undefined;
-          if (result && result.success) {
-            if (data && data.data) {
-              dispatch(setSelectChat(data.data));
-            }
-          } else {
-            router.push("/");
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(() => {
-          dispatch(setChatLoading(false));
-        });
-    };
-    getChat();
-  }, [chatId]);
+
   useEffect(() => {
     if (input.trim().length > 0) {
       setSendDisable(false);
@@ -145,6 +113,7 @@ function ChatArea({ children }: { children: React.ReactNode }) {
       setSendDisable(true);
     }
   }, [input]);
+
   return (
     <section className=" pr-1 flex flex-col w-full overflow-x-hidden">
       {/* !login header */}

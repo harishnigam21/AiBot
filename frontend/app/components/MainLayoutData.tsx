@@ -1,51 +1,32 @@
 "use client";
-import useApi from "@/hooks/useApi";
 import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../redux/store";
-import { Data } from "@/types/data";
+import { useAppDispatch } from "../redux/store";
 import { setLoginStatus, setUser, User } from "../redux/slices/User";
 import { RecentChat, setPinChat, setRecentChat } from "../redux/slices/Chat";
-import { setRecentChatLoading } from "../redux/slices/LoadingStates";
-export default function MainLayoutData() {
-  const { sendRequest } = useApi();
+import { loginSwitch } from "../redux/slices/Popup";
+export default function MainLayoutData({
+  dataUser,
+  dataList,
+}: {
+  dataUser: User | null;
+  dataList: {
+    recent: RecentChat[];
+    pinned: RecentChat[];
+  } | null;
+}) {
   const dispatch = useAppDispatch();
   useEffect(() => {
-    const fetchUser = async () => {
-      await sendRequest("api/auth/user").then((result) => {
-        const data = result?.data as Data<User> | undefined;
-        if (result && result.success && data?.data) {
-          dispatch(setUser(data?.data));
-          dispatch(setLoginStatus("authenticated"));
-        } else {
-          dispatch(setLoginStatus("unauthenticated"));
-        }
-      });
-    };
-    fetchUser();
-  }, []);
-  useEffect(() => {
-    const getRecentList = async () => {
-      dispatch(setRecentChatLoading(true));
-      await sendRequest("api/chat/recent")
-        .then((result) => {
-          const data = result.data as
-            | Data<{ recent: RecentChat[]; pinned: RecentChat[] }>
-            | undefined;
-          if (result && result.success) {
-            if (data && data.data) {
-              dispatch(setRecentChat(data.data.recent));
-              dispatch(setPinChat(data.data.pinned));
-            }
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        })
-        .finally(() => {
-          dispatch(setRecentChatLoading(false));
-        });
-    };
-    getRecentList();
+    if (!dataUser) {
+      dispatch(loginSwitch(true));
+      dispatch(setLoginStatus("unauthenticated"));
+    } else {
+      dispatch(setUser(dataUser));
+      dispatch(setLoginStatus("authenticated"));
+    }
+    if (dataList) {
+      dispatch(setRecentChat(dataList.recent));
+      dispatch(setPinChat(dataList.pinned));
+    }
   }, []);
   return null;
 }
