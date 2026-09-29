@@ -4,17 +4,17 @@ services:
   # =========================
   redis:
     image: redis:7-alpine
-    container_name: aibot-redis
+    container_name: chatgpt-redis
     restart: unless-stopped
 
     expose:
       - "6379"
 
     volumes:
-      - aibot_redis_data:/data
+      - chatgpt_redis_data:/data
 
     networks:
-      - aibot-network
+      - chatgpt-network
 
   # =========================
   # Auth Service
@@ -24,7 +24,7 @@ services:
       context: ./services/auth
       dockerfile: Dockerfile
 
-    container_name: aibot-auth
+    container_name: chatgpt-auth
     restart: unless-stopped
 
     env_file:
@@ -38,7 +38,7 @@ services:
       - redis
 
     networks:
-      - aibot-network
+      - chatgpt-network
 
   # =========================
   # Chat Service
@@ -48,7 +48,7 @@ services:
       context: ./services/chat
       dockerfile: Dockerfile
 
-    container_name: aibot-chat
+    container_name: chatgpt-chat
     restart: unless-stopped
 
     env_file:
@@ -62,7 +62,7 @@ services:
       - redis
 
     networks:
-      - aibot-network
+      - chatgpt-network
 
   # =========================
   # Agent Service
@@ -72,7 +72,7 @@ services:
       context: ./services/agent
       dockerfile: Dockerfile
 
-    container_name: aibot-agent
+    container_name: chatgpt-agent
     restart: unless-stopped
 
     env_file:
@@ -86,7 +86,7 @@ services:
       - redis
 
     networks:
-      - aibot-network
+      - chatgpt-network
 
   # =========================
   # Gateway
@@ -96,7 +96,7 @@ services:
       context: ./gateway
       dockerfile: Dockerfile
 
-    container_name: aibot-gateway
+    container_name: chatgpt-gateway
     restart: unless-stopped
 
     env_file:
@@ -112,7 +112,7 @@ services:
       - agent
 
     networks:
-      - aibot-network
+      - chatgpt-network
 
   # =========================
   # Frontend
@@ -127,7 +127,7 @@ services:
         NEXT_PUBLIC_FIREBASE_API_KEY: ${NEXT_PUBLIC_FIREBASE_API_KEY}
         NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
 
-    container_name: aibot-frontend
+    container_name: chatgpt-frontend
     restart: unless-stopped
 
     ports:
@@ -137,18 +137,18 @@ services:
       - gateway
 
     networks:
-      - aibot-network
+      - chatgpt-network
 # =========================
 # Volumes
 # =========================
 
 volumes:
-  aibot_redis_data:
+  chatgpt_redis_data:
 
 # =========================
 # Network
 # =========================
 
 networks:
-  aibot-network:
+  chatgpt-network:
     driver: bridge
